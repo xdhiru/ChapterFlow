@@ -713,32 +713,41 @@ function hideFullscreenUI(){
    Fullscreen state
    ========================= */
 
-document.addEventListener(
-    "fullscreenchange",
-    ()=>{
+function updateFullscreenBtnText(){
+    if(isFullscreen()){
+        fullscreenBtn.textContent="Exit Fullscreen";
+    }else{
+        fullscreenBtn.textContent="Go Fullscreen";
+    }
+}
 
-        if(isFullscreen()){
+function onFullscreenChange(){
 
-            document.body.classList.add("fullscreen");
+    if(isFullscreen()){
 
-            document.body.classList.add(
-                "fullscreen-ui-hidden"
-            );
+        document.body.classList.add("fullscreen");
 
-        }else{
+        document.body.classList.add(
+            "fullscreen-ui-hidden"
+        );
 
-            document.body.classList.remove("fullscreen");
+    }else{
 
-            document.body.classList.remove(
-                "fullscreen-ui-hidden"
-            );
+        document.body.classList.remove("fullscreen");
 
-            closeSidebar();
+        document.body.classList.remove(
+            "fullscreen-ui-hidden"
+        );
 
-        }
+        closeSidebar();
 
     }
-);
+
+    updateFullscreenBtnText();
+}
+
+document.addEventListener("fullscreenchange",onFullscreenChange);
+document.addEventListener("webkitfullscreenchange",onFullscreenChange);
 
 
 /* =========================
