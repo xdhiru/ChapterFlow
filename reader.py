@@ -74,14 +74,16 @@ body{
 #viewer{
     position:fixed;
     inset:0;
-    width:100vw;
-    height:100vh;
+    width:100%;
+    height:100%;
     overflow:auto;
     display:flex;
     background:#000;
     overscroll-behavior:contain;
     scrollbar-width:thin;
     scrollbar-color:rgba(255,255,255,.25) transparent;
+    touch-action:pan-y;
+    z-index:1;
 }
 
 #viewer::-webkit-scrollbar{
@@ -191,22 +193,7 @@ body{
 }
 
 
-/* =========================
-   Fullscreen gesture zones
-   ========================= */
 
-#fullscreen-gesture{
-    display:none;
-    position:fixed;
-    inset:0;
-    z-index:12;
-    touch-action:none;
-    cursor:pointer;
-}
-
-body.fullscreen #fullscreen-gesture{
-    display:block;
-}
 
 
 /* =========================
@@ -626,8 +613,6 @@ body.fullscreen-ui-hidden #sidebar{
     </div>
 </div>
 
-<div id="fullscreen-gesture"></div>
-
 <div id="edge"></div>
 
 <div id="swipe-hint">
@@ -685,7 +670,6 @@ const edge=document.getElementById("edge");
 const tree=document.getElementById("tree");
 const swipeHint=document.getElementById("swipe-hint");
 const fullscreenBtn=document.getElementById("fullscreen-btn");
-const fullscreenGesture=document.getElementById("fullscreen-gesture");
 const sidebarClose=document.getElementById("sidebar-close");
 const dirLtrBtn=document.getElementById("dir-ltr");
 const dirRtlBtn=document.getElementById("dir-rtl");
@@ -1307,12 +1291,11 @@ let lastTouchTime=0;
 const SWIPE_THRESHOLD=50;
 const VERTICAL_LIMIT=100;
 
-fullscreenGesture.addEventListener(
+viewer.addEventListener(
     "touchstart",
     e=>{
 
         lastTouchTime=Date.now();
-        if(!isFullscreen())return;
 
         const t=e.changedTouches[0];
 
@@ -1322,42 +1305,38 @@ fullscreenGesture.addEventListener(
         fsTracking=true;
 
     },
-    {passive:false}
+    {passive:true}
 );
 
 
-fullscreenGesture.addEventListener(
+viewer.addEventListener(
     "touchmove",
     e=>{
 
-        if(!isFullscreen()||!fsTracking)return;
+        if(!fsTracking)return;
 
         const t=e.changedTouches[0];
         const dx=t.clientX-fsStartX;
         const dy=t.clientY-fsStartY;
 
-        // Allow vertical drag scrolling on tall pages in fullscreen
-        if(Math.abs(dy)>Math.abs(dx) && viewer.scrollHeight>viewer.clientHeight){
-            viewer.scrollTop -= (t.clientY - fsLastY);
-            fsLastY = t.clientY;
+        // Prevent browser back/forward swipe navigation if horizontal swipe
+        if(Math.abs(dx)>Math.abs(dy) && Math.abs(dx)>15){
             e.preventDefault();
-            return;
         }
 
-        fsLastY = t.clientY;
-        e.preventDefault();
+        fsLastY=t.clientY;
 
     },
     {passive:false}
 );
 
 
-fullscreenGesture.addEventListener(
+viewer.addEventListener(
     "touchend",
     e=>{
 
         lastTouchTime=Date.now();
-        if(!isFullscreen()||!fsTracking)return;
+        if(!fsTracking)return;
 
         const t=e.changedTouches[0];
 
@@ -1369,7 +1348,7 @@ fullscreenGesture.addEventListener(
 
         fsTracking=false;
 
-        // If user scrolled vertically in fullscreen, don't trigger horizontal navigation
+        // If user scrolled vertically, don't trigger horizontal navigation
         if(Math.abs(dy)>=VERTICAL_LIMIT && viewer.scrollHeight>viewer.clientHeight){
             return;
         }
@@ -1391,7 +1370,9 @@ fullscreenGesture.addEventListener(
                 Math.abs(dy)<VERTICAL_LIMIT
             ){
 
-                revealFullscreenUI();
+                if(isFullscreen()){
+                    revealFullscreenUI();
+                }
                 openSidebar();
 
             }
@@ -1452,7 +1433,7 @@ fullscreenGesture.addEventListener(
 );
 
 
-fullscreenGesture.addEventListener(
+viewer.addEventListener(
     "touchcancel",
     ()=>{
         fsTracking=false;
