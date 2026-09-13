@@ -1,6 +1,6 @@
 from http.server import HTTPServer,BaseHTTPRequestHandler
 from pathlib import Path
-import json,mimetypes,urllib.parse,re
+import json,mimetypes,urllib.parse,re,argparse,sys
 
 ROOT=Path(__file__).parent.resolve()
 IMAGE_EXTENSIONS={".png",".jpg",".jpeg",".webp",".gif",".bmp"}
@@ -1186,14 +1186,62 @@ class Handler(BaseHTTPRequestHandler):
 
 if __name__=="__main__":
 
+    parser = argparse.ArgumentParser(
+        prog="ChapterFlow",
+        description="Lightweight local manga and comic chapter reader."
+    )
+    parser.add_argument(
+        "directory",
+        nargs="?",
+        default=None,
+        help="Directory containing chapter folders (default: script directory)"
+    )
+    parser.add_argument(
+        "-d", "--dir",
+        dest="dir_opt",
+        default=None,
+        help="Directory containing chapter folders (alternative to positional argument)"
+    )
+    parser.add_argument(
+        "-p", "--port",
+        type=int,
+        default=8000,
+        help="Port to run the server on (default: 8000)"
+    )
+    parser.add_argument(
+        "-b", "--bind",
+        default="localhost",
+        help="Address to bind to (default: localhost, use 0.0.0.0 for LAN/mobile access)"
+    )
+
+    args = parser.parse_args()
+
+    chosen_dir = args.dir_opt or args.directory or Path(__file__).parent.resolve()
+    ROOT = Path(chosen_dir).resolve()
+
+    if not ROOT.is_dir():
+        print(f"Error: Directory does not exist: {ROOT}", file=sys.stderr)
+        sys.exit(1)
+
+    try:
+        server = HTTPServer((args.bind, args.port), Handler)
+    except OSError as e:
+        print(f"Error: Could not bind to {args.bind}:{args.port} ({e})", file=sys.stderr)
+        sys.exit(1)
+
+    url_host = "localhost" if args.bind in ("0.0.0.0", "") else args.bind
+
     print("=" * 44)
     print("  ChapterFlow - Local Manga & Comic Reader")
     print(f"  Reading from: {ROOT}")
-    print("  Open: http://localhost:8000")
+    print(f"  Server URL:   http://{url_host}:{args.port}")
+    if args.bind == "0.0.0.0":
+        print("  LAN Access:   Available on your local IP")
     print("  Press Ctrl+C to stop.")
     print("=" * 44)
 
-    HTTPServer(
-        ("localhost",8000),
-        Handler
-    ).serve_forever()
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print("\nStopping ChapterFlow. Goodbye!")
+        server.server_close()

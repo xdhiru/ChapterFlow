@@ -43,18 +43,35 @@ ChapterFlow/
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Start & CLI Options
 
-1. **Start the server**:
-   ```bash
-   python reader.py
-   ```
+Run ChapterFlow directly with Python:
 
-2. **Open your browser**:
-   Navigate to:
-   ```text
-   http://localhost:8000
-   ```
+```bash
+# Basic usage (reads current/script directory on port 8000)
+python reader.py
+
+# Specify a custom directory containing your chapters
+python reader.py "D:/Manga/OnePiece"
+
+# Specify a custom port
+python reader.py --port 8080
+
+# Specify both folder and port
+python reader.py "D:/Manga/OnePiece" -p 8080
+
+# Enable access from phone/tablet on your local Wi-Fi network
+python reader.py --bind 0.0.0.0
+```
+
+### CLI Arguments
+
+| Argument | Description | Default |
+| :--- | :--- | :--- |
+| `directory` or `-d, --dir` | Path to folder containing chapter subdirectories | Script directory |
+| `-p, --port` | Port to run the server on | `8000` |
+| `-b, --bind` | Network interface to bind to (`0.0.0.0` for LAN) | `localhost` |
+| `-h, --help` | Show help and usage options | — |
 
 ---
 
