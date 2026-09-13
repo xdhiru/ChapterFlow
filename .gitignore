@@ -1,0 +1,28 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv
+env/
+venv/
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# IDE Configurations
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Optional: Ignore personal comic/chapter media if keeping repo code-only
+# Uncomment the line below if you don't want to commit image folders:
+# */*.png
+# */*.jpg
+# */*.jpeg
+# */*.webp
