@@ -1228,19 +1228,19 @@ if __name__=="__main__":
 
     parser = argparse.ArgumentParser(
         prog="ChapterFlow",
-        description="Lightweight local manga and comic chapter reader."
+        description="Lightweight local reader for chaptered folders — study notes, documents, book scans, and comics."
     )
     parser.add_argument(
         "directory",
         nargs="?",
         default=None,
-        help="Directory containing chapter folders (default: script directory)"
+        help="Directory containing chapter or note folders (default: script directory)"
     )
     parser.add_argument(
         "-d", "--dir",
         dest="dir_opt",
         default=None,
-        help="Directory containing chapter folders (alternative to positional argument)"
+        help="Directory containing chapter or note folders (alternative to positional argument)"
     )
     parser.add_argument(
         "-p", "--port",
@@ -1271,14 +1271,15 @@ if __name__=="__main__":
 
     url_host = "localhost" if args.bind in ("0.0.0.0", "") else args.bind
 
-    print("=" * 44)
-    print("  ChapterFlow - Local Manga & Comic Reader")
+    print("=" * 48)
+    print("  ChapterFlow - Local Image & Chapter Reader")
+    print("  (Study Notes, Docs, Book Scans & Comics)")
     print(f"  Reading from: {ROOT}")
     print(f"  Server URL:   http://{url_host}:{args.port}")
     if args.bind == "0.0.0.0":
         print("  LAN Access:   Available on your local IP")
     print("  Press Ctrl+C to stop.")
-    print("=" * 44)
+    print("=" * 48)
 
     try:
         server.serve_forever()

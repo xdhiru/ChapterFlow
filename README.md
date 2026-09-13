@@ -1,40 +1,48 @@
 # 📖 ChapterFlow
 
-A fast, lightweight, and zero-dependency local web reader tailored for manga, comics, and webtoons organized into chapter folders.
+A fast, lightweight, zero-dependency local web reader for chaptered image folders — built for **phone camera study notes**, **lecture slides & whiteboards**, **document scans**, **sketchbooks**, and **comics**.
+
+---
+
+## 🎯 Use Cases
+
+- 📝 **Lecture & Study Notes**: Flip seamlessly through phone photos of handwritten notebooks, whiteboard sessions, or textbook chapters organized by lecture or week (`Week 01/`, `Lecture 02 - Calculus/`).
+- 📄 **Document & Book Scans**: Review receipts, manuals, recipes, or multi-page paper documents without needing bulky PDF software.
+- 🎨 **Art & Design Progress**: Review sketchbooks, storyboards, and design iterations.
+- 📚 **Manga & Comics**: Distraction-free, responsive reader with fullscreen mode.
 
 ---
 
 ## ✨ Features
 
 - **Zero External Dependencies**: Built entirely with Python's standard library (`http.server`, `pathlib`, `json`, `re`, `urllib`). No `pip install` required.
-- **Smart Natural Sorting**: Intelligently handles numeric sorting (`page 2` before `page 10`), pins covers (`[cover]` or `cover`) first, and puts epilogues last.
+- **Smart Natural Sorting**: Intelligently handles numeric sorting (`IMG_2` before `IMG_10`), pins covers (`[cover]` or `cover`) first, and puts epilogues last.
 - **Distraction-Free Dark Mode**: Clean, edge-to-edge reading interface with image auto-scaling (`object-fit: contain`).
 - **Collapsible Sidebar Table of Contents**: Organized chapter tree showing page numbers and names, with real-time tracking of your current reading position.
-- **Manga-Friendly Touch & Gesture Controls**:
+- **Unified 1-Click & Touch Gestures**:
   - Fullscreen mode with auto-hiding controls.
-  - Multi-zone touch interaction: outer zones for page turns, center 30% to reveal controls.
+  - Multi-zone navigation: click/tap sides for page turns, center 30% to toggle controls.
   - Desktop left-edge mouse trigger to smoothly peek the sidebar.
-  - Swipe left/right gestures on mobile devices.
+  - Touch swipe gestures for tablets and phones.
 - **URL Reading Progress**: Keeps your current page in the URL query (`?page=X`) so reloading or bookmarking always restores your position.
 
 ---
 
 ## 📁 Folder Structure
 
-Place `reader.py` directly in the folder containing your chapters or volumes:
+Place `reader.py` directly in the root folder, or point it to any folder on your computer:
 
 ```text
-ChapterFlow/
-├── Chapter 01/
-│   ├── [cover].jpg
-│   ├── 01.jpg
-│   ├── 02.jpg
-│   └── 03.jpg
-├── Chapter 02/
-│   ├── 01.jpg
-│   └── 02.jpg
-├── Epilogue/
-│   └── 01.jpg
+StudyNotes/ (or Comics/)
+├── Lecture 01 - Introduction/
+│   ├── IMG_001.jpg
+│   ├── IMG_002.jpg
+│   └── IMG_003.jpg
+├── Lecture 02 - Data Structures/
+│   ├── IMG_001.jpg
+│   └── IMG_002.jpg
+├── Chapter 03/
+│   └── page_01.png
 ├── reader.py
 ├── README.md
 ├── LICENSE
