@@ -13,6 +13,19 @@ def folder_sort_key(path):
 
 def get_images():
     images=[]
+    # Check for direct images in ROOT
+    root_files=[p for p in ROOT.iterdir()
+                if p.is_file() and p.suffix.lower() in IMAGE_EXTENSIONS]
+    if root_files:
+        root_files.sort(key=lambda p:(0 if p.stem.lower() in ("[cover]","cover") else 1,natural_key(p.name)))
+        group_name = ROOT.name if ROOT.name else "Main"
+        for f in root_files:
+            images.append({
+                "day":group_name,
+                "name":f.name,
+                "url":"/"+urllib.parse.quote(str(f.relative_to(ROOT)).replace("\\","/"))
+            })
+
     folders=sorted((p for p in ROOT.iterdir() if p.is_dir()),key=folder_sort_key)
     for folder in folders:
         files=[p for p in folder.iterdir()
@@ -560,6 +573,23 @@ function buildTree(){
    Show page
    ========================= */
 
+function preloadNearby(){
+    const ahead=2;
+    const behind=1;
+    for(let i=1;i<=ahead;i++){
+        if(index+i<images.length){
+            const img=new Image();
+            img.src=images[index+i].url;
+        }
+    }
+    for(let i=1;i<=behind;i++){
+        if(index-i>=0){
+            const img=new Image();
+            img.src=images[index-i].url;
+        }
+    }
+}
+
 function show(){
 
     if(!images.length)return;
@@ -573,6 +603,7 @@ function show(){
     );
 
     updateSidebar();
+    preloadNearby();
 }
 
 
@@ -1299,6 +1330,10 @@ class Handler(BaseHTTPRequestHandler):
             self.send_header(
                 "Content-Type",
                 mime
+            )
+            self.send_header(
+                "Cache-Control",
+                "public, max-age=3600"
             )
             self.end_headers()
 
