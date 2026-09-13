@@ -66,6 +66,7 @@ body{
     user-select:none;
     -webkit-user-select:none;
     -webkit-user-drag:none;
+    cursor:pointer;
 }
 
 
@@ -79,6 +80,7 @@ body{
     inset:0;
     z-index:12;
     touch-action:none;
+    cursor:pointer;
 }
 
 body.fullscreen #fullscreen-gesture{
@@ -729,6 +731,7 @@ document.addEventListener("keydown",e=>{
 let fsStartX=0;
 let fsStartY=0;
 let fsTracking=false;
+let lastTouchTime=0;
 
 const SWIPE_THRESHOLD=50;
 const VERTICAL_LIMIT=100;
@@ -737,6 +740,7 @@ fullscreenGesture.addEventListener(
     "touchstart",
     e=>{
 
+        lastTouchTime=Date.now();
         if(!isFullscreen())return;
 
         const t=e.changedTouches[0];
@@ -771,6 +775,7 @@ fullscreenGesture.addEventListener(
     "touchend",
     e=>{
 
+        lastTouchTime=Date.now();
         if(!isFullscreen()||!fsTracking)return;
 
         const t=e.changedTouches[0];
@@ -867,6 +872,41 @@ fullscreenGesture.addEventListener(
     },
     {passive:true}
 );
+
+
+/* ==================================================
+   CLICK / TAP NAVIGATION (PC Mouse & Touchscreens)
+   ================================================== */
+
+document.addEventListener("click", e => {
+
+    // Prevent double-triggering from touch events that already ran
+    if(Date.now()-lastTouchTime<600)return;
+
+    // Ignore clicks on UI elements (sidebar, close button, fullscreen button, edge trigger)
+    if(e.target.closest("#sidebar, #fullscreen-btn, #sidebar-close, #edge"))return;
+
+    // If sidebar is open, click outside closes it
+    if(sidebar.classList.contains("open")){
+        closeSidebar();
+        return;
+    }
+
+    const width=window.innerWidth;
+    const x=e.clientX;
+
+    if(x<width*0.35){
+        next();
+    }else if(x>width*0.65){
+        previous();
+    }else{
+        if(isFullscreen()){
+            revealFullscreenUI();
+        }
+        openSidebar();
+    }
+
+});
 
 
 /* =========================

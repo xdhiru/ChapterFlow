@@ -77,14 +77,14 @@ python reader.py --bind 0.0.0.0
 
 ## ⌨️ Controls & Shortcuts
 
-| Action | Desktop / Keyboard | Touch / Mobile |
+| Action | Desktop (Mouse & Keyboard) | Touch / Mobile |
 | :--- | :--- | :--- |
-| **Next Page** | `→` / `Space` / `PageDown` | Tap left zone / Swipe right (Manga RTL) |
-| **Previous Page** | `←` / `PageUp` | Tap right zone / Swipe left |
+| **Next Page** | `→` / `Space` / `PageDown` or **Click Left 35%** | Tap left zone / Swipe right (Manga RTL) |
+| **Previous Page** | `←` / `PageUp` or **Click Right 35%** | Tap right zone / Swipe left |
 | **Jump to First Page** | `Home` | — |
 | **Jump to Last Page** | `End` | — |
 | **Toggle Fullscreen** | `F` or Fullscreen button | Fullscreen button |
-| **Toggle Sidebar / TOC** | Hover left screen edge | Tap screen center (middle 30%) |
+| **Toggle Sidebar / TOC** | Hover left edge or **Click Center 30%** | Tap screen center (middle 30%) |
 
 ---
 
