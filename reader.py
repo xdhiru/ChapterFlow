@@ -829,14 +829,6 @@ function toggleMaintainZoom(){
 }
 
 image.onload=()=>{
-    // Auto-detect long vertical strip on initial view if no saved preference
-    if(!localStorage.getItem("chapterflow_view_mode")){
-        if(image.naturalHeight/image.naturalWidth>1.8){
-            viewMode="fit-width";
-            applyZoom();
-        }
-    }
-
     if(viewMode==="custom"){
         applyZoom();
     }
@@ -1489,16 +1481,6 @@ viewer.addEventListener("wheel", e => {
         zoomAtPoint(e.clientX, e.clientY, factor);
     }
 }, {passive: false});
-
-image.addEventListener("dblclick", e => {
-    e.preventDefault();
-    e.stopPropagation();
-    if(viewMode === "fit-screen"){
-        setViewMode("fit-width");
-    } else {
-        setViewMode("fit-screen");
-    }
-});
 
 if(zoomOutBtn) zoomOutBtn.onclick = (e) => { e.stopPropagation(); zoomOut(); };
 if(zoomInBtn) zoomInBtn.onclick = (e) => { e.stopPropagation(); zoomIn(); };

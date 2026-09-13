@@ -108,7 +108,6 @@ ChapterFlow includes a **Reading Direction toggle** in the sidebar (saved automa
 | **Zoom at Cursor** | `Ctrl` + Mouse Wheel | Pinch-to-zoom | Pinch-to-zoom |
 | **Cycle View Mode** | `W` or Click Zoom Badge (`Fit S` / `Fit W` / `100%`) | Tap Zoom Badge | Tap Zoom Badge |
 | **Reset Zoom** | `0` (Reset to Fit Screen) | Tap Zoom Badge | Tap Zoom Badge |
-| **Toggle Fit Screen / Fit Width** | **Double Click** on image | Double Tap | Double Tap |
 | **Maintain Zoom Across Pages** | `L` or Click Lock Button (`🔒`) | Tap Lock Button (`🔒`) | Tap Lock Button (`🔒`) |
 | **Jump to First Page** | `Home` | — | — |
 | **Jump to Last Page** | `End` | — | — |
