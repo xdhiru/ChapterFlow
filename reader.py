@@ -68,18 +68,126 @@ body{
 }
 
 /* =========================
-   Reader
+   Reader & Viewer
    ========================= */
 
-#image{
+#viewer{
+    position:fixed;
+    inset:0;
     width:100vw;
     height:100vh;
-    object-fit:contain;
+    overflow:auto;
+    display:flex;
+    background:#000;
+    overscroll-behavior:contain;
+    scrollbar-width:thin;
+    scrollbar-color:rgba(255,255,255,.25) transparent;
+}
+
+#viewer::-webkit-scrollbar{
+    width:8px;
+    height:8px;
+}
+#viewer::-webkit-scrollbar-thumb{
+    background:rgba(255,255,255,.25);
+    border-radius:4px;
+}
+#viewer::-webkit-scrollbar-thumb:hover{
+    background:rgba(255,255,255,.45);
+}
+#viewer::-webkit-scrollbar-track{
+    background:transparent;
+}
+
+#image-wrapper{
+    margin:auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    min-width:min-content;
+    min-height:min-content;
+}
+
+#image{
     display:block;
     user-select:none;
     -webkit-user-select:none;
     -webkit-user-drag:none;
     cursor:pointer;
+}
+
+/* View Modes */
+#viewer.mode-fit-screen{
+    overflow:hidden;
+}
+
+#viewer.mode-fit-screen #image-wrapper{
+    margin:auto;
+    width:100vw;
+    height:100vh;
+}
+
+#viewer.mode-fit-screen #image{
+    width:100vw;
+    height:100vh;
+    max-width:100vw;
+    max-height:100vh;
+    object-fit:contain;
+}
+
+#viewer.mode-fit-width{
+    overflow-y:auto;
+    overflow-x:hidden;
+}
+
+#viewer.mode-fit-width #image-wrapper{
+    margin:0 auto;
+    width:100%;
+    max-width:100vw;
+}
+
+#viewer.mode-fit-width #image{
+    width:100%;
+    max-width:100vw;
+    height:auto;
+    margin:0 auto;
+    object-fit:initial;
+}
+
+#viewer.mode-fit-height{
+    overflow-x:auto;
+    overflow-y:hidden;
+}
+
+#viewer.mode-fit-height #image-wrapper{
+    margin:auto;
+    height:100vh;
+}
+
+#viewer.mode-fit-height #image{
+    height:100vh;
+    width:auto;
+    object-fit:contain;
+}
+
+#viewer.mode-custom{
+    overflow:auto;
+}
+
+#viewer.mode-custom #image-wrapper{
+    margin:auto;
+}
+
+#viewer.mode-custom #image{
+    object-fit:initial;
+}
+
+#viewer.is-dragging{
+    cursor:grab !important;
+}
+#viewer.is-dragging #image{
+    cursor:grabbing !important;
 }
 
 
@@ -329,6 +437,86 @@ body.fullscreen #fullscreen-gesture{
 
 
 /* =========================
+   Zoom Controls Widget
+   ========================= */
+
+#zoom-widget{
+    position:fixed;
+    right:14px;
+    bottom:54px;
+    display:flex;
+    align-items:center;
+    background:rgba(26,26,26,.88);
+    border:1px solid rgba(255,255,255,.16);
+    border-radius:6px;
+    padding:3px 4px;
+    gap:3px;
+    z-index:35;
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    user-select:none;
+    -webkit-user-select:none;
+    box-shadow:0 4px 16px rgba(0,0,0,.45);
+    transition:opacity .25s ease, transform .1s;
+}
+
+.zoom-btn{
+    border:none;
+    background:transparent;
+    color:#ccc;
+    font-size:14px;
+    font-weight:bold;
+    padding:4px 8px;
+    border-radius:4px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    transition:all .15s ease;
+    line-height:1;
+    font-family:inherit;
+}
+
+.zoom-btn:hover{
+    background:rgba(255,255,255,.15);
+    color:#fff;
+}
+
+.zoom-btn:active{
+    transform:scale(0.92);
+}
+
+.zoom-level-badge{
+    font-size:11px;
+    font-weight:600;
+    min-width:48px;
+    padding:4px 6px;
+    text-align:center;
+    color:#ddd;
+    background:rgba(255,255,255,.07);
+    border-radius:4px;
+    letter-spacing:0.3px;
+}
+
+.zoom-level-badge:hover{
+    background:rgba(255,255,255,.18);
+    color:#fff;
+}
+
+#zoom-lock-btn{
+    font-size:11px;
+    padding:4px 6px;
+    opacity:0.65;
+}
+
+#zoom-lock-btn.active{
+    opacity:1;
+    color:#74c0fc;
+    background:rgba(59,92,204,.35);
+}
+
+
+/* =========================
    Fullscreen button
    ========================= */
 
@@ -346,6 +534,9 @@ body.fullscreen #fullscreen-gesture{
     z-index:35;
     user-select:none;
     -webkit-user-select:none;
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    transition:background .15s, opacity .25s ease, transform .1s;
 }
 
 #fullscreen-btn:hover{
@@ -358,7 +549,8 @@ body.fullscreen #fullscreen-gesture{
    Fullscreen UI hiding
    ========================= */
 
-body.fullscreen-ui-hidden #fullscreen-btn{
+body.fullscreen-ui-hidden #fullscreen-btn,
+body.fullscreen-ui-hidden #zoom-widget{
     opacity:0;
     pointer-events:none;
 }
@@ -392,6 +584,24 @@ body.fullscreen-ui-hidden #sidebar{
         display:block;
     }
 
+    #zoom-widget{
+        right:10px;
+        bottom:46px;
+        padding:2px 3px;
+        gap:2px;
+    }
+
+    .zoom-btn{
+        padding:3px 6px;
+        font-size:12px;
+    }
+
+    .zoom-level-badge{
+        min-width:42px;
+        font-size:10px;
+        padding:3px 4px;
+    }
+
     #fullscreen-btn{
         right:10px;
         bottom:10px;
@@ -410,7 +620,11 @@ body.fullscreen-ui-hidden #sidebar{
 
 <body>
 
-<img id="image" draggable="false">
+<div id="viewer" class="mode-fit-screen">
+    <div id="image-wrapper">
+        <img id="image" draggable="false">
+    </div>
+</div>
 
 <div id="fullscreen-gesture"></div>
 
@@ -418,6 +632,13 @@ body.fullscreen-ui-hidden #sidebar{
 
 <div id="swipe-hint">
     ← Swipe to navigate →
+</div>
+
+<div id="zoom-widget">
+    <button id="zoom-out-btn" class="zoom-btn" type="button" title="Zoom Out (-)">−</button>
+    <button id="zoom-level-btn" class="zoom-btn zoom-level-badge" type="button" title="Zoom Level / Mode (Click to cycle)">Fit S</button>
+    <button id="zoom-in-btn" class="zoom-btn" type="button" title="Zoom In (+)">+</button>
+    <button id="zoom-lock-btn" class="zoom-btn active" type="button" title="Maintain Zoom across pages: ON">🔒</button>
 </div>
 
 <button id="fullscreen-btn">
@@ -457,6 +678,8 @@ let closeTimer=null;
 let hideUITimer=null;
 
 const image=document.getElementById("image");
+const viewer=document.getElementById("viewer");
+const imageWrapper=document.getElementById("image-wrapper");
 const sidebar=document.getElementById("sidebar");
 const edge=document.getElementById("edge");
 const tree=document.getElementById("tree");
@@ -466,6 +689,11 @@ const fullscreenGesture=document.getElementById("fullscreen-gesture");
 const sidebarClose=document.getElementById("sidebar-close");
 const dirLtrBtn=document.getElementById("dir-ltr");
 const dirRtlBtn=document.getElementById("dir-rtl");
+const zoomWidget=document.getElementById("zoom-widget");
+const zoomOutBtn=document.getElementById("zoom-out-btn");
+const zoomLevelBtn=document.getElementById("zoom-level-btn");
+const zoomInBtn=document.getElementById("zoom-in-btn");
+const zoomLockBtn=document.getElementById("zoom-lock-btn");
 
 let readingDirection=localStorage.getItem("chapterflow_dir")||"ltr";
 
@@ -479,6 +707,164 @@ function setReadingDirection(dir){
 if(dirLtrBtn) dirLtrBtn.onclick=()=>setReadingDirection("ltr");
 if(dirRtlBtn) dirRtlBtn.onclick=()=>setReadingDirection("rtl");
 setReadingDirection(readingDirection);
+
+
+/* =========================
+   Zoom & View Modes
+   ========================= */
+
+let viewMode=localStorage.getItem("chapterflow_view_mode")||"fit-screen";
+let zoomScale=parseFloat(localStorage.getItem("chapterflow_zoom_scale"))||1.0;
+let maintainZoom=localStorage.getItem("chapterflow_maintain_zoom")!=="false";
+let scrollTargetOnLoad=null;
+let dragDistance=0;
+let isPanning=false;
+let panStartX=0;
+let panStartY=0;
+let panScrollLeft=0;
+let panScrollTop=0;
+
+function updateZoomUI(){
+    if(!zoomLevelBtn)return;
+    if(viewMode==="fit-screen"){
+        zoomLevelBtn.textContent="Fit S";
+        zoomLevelBtn.title="Mode: Fit Screen. Click to toggle Fit Width";
+    }else if(viewMode==="fit-width"){
+        zoomLevelBtn.textContent="Fit W";
+        zoomLevelBtn.title="Mode: Fit Width (Vertical Scroll). Click to toggle 100%";
+    }else{
+        zoomLevelBtn.textContent=Math.round(zoomScale*100)+"%";
+        zoomLevelBtn.title=`Zoom: ${Math.round(zoomScale*100)}%. Click to toggle Fit Screen`;
+    }
+
+    if(zoomLockBtn){
+        zoomLockBtn.classList.toggle("active",maintainZoom);
+        zoomLockBtn.title=maintainZoom?"Maintain Zoom across pages: ON":"Maintain Zoom across pages: OFF";
+    }
+}
+
+function applyZoom(){
+    viewer.className="mode-"+viewMode;
+
+    if(viewMode==="fit-screen"||viewMode==="fit-width"||viewMode==="fit-height"){
+        image.style.width="";
+        image.style.maxWidth="";
+        image.style.height="";
+        image.style.maxHeight="";
+    }else if(viewMode==="custom"){
+        const baseWidth=image.naturalWidth||window.innerWidth;
+        image.style.width=Math.round(baseWidth*zoomScale)+"px";
+        image.style.maxWidth="none";
+        image.style.height="auto";
+        image.style.maxHeight="none";
+    }
+
+    updateZoomUI();
+
+    if(maintainZoom){
+        localStorage.setItem("chapterflow_view_mode",viewMode);
+        localStorage.setItem("chapterflow_zoom_scale",zoomScale.toString());
+    }
+    localStorage.setItem("chapterflow_maintain_zoom",maintainZoom.toString());
+}
+
+function setViewMode(mode){
+    viewMode=mode;
+    applyZoom();
+}
+
+function cycleZoomMode(){
+    if(viewMode==="fit-screen"){
+        setViewMode("fit-width");
+    }else if(viewMode==="fit-width"){
+        zoomScale=1.0;
+        setViewMode("custom");
+    }else if(viewMode==="custom" && zoomScale<1.4){
+        zoomScale=1.5;
+        setViewMode("custom");
+    }else{
+        setViewMode("fit-screen");
+    }
+}
+
+function zoomIn(){
+    if(viewMode==="fit-screen"||viewMode==="fit-width"){
+        const renderedRatio=image.clientWidth/(image.naturalWidth||image.clientWidth||1);
+        zoomScale=Math.min(5.0,Math.round((Math.max(1.0,renderedRatio)*1.25)*10)/10);
+        setViewMode("custom");
+    }else{
+        zoomScale=Math.min(5.0,Math.round((zoomScale+0.2)*100)/100);
+        applyZoom();
+    }
+}
+
+function zoomOut(){
+    if(viewMode==="fit-screen"){
+        zoomScale=0.75;
+        setViewMode("custom");
+    }else if(viewMode==="fit-width"){
+        setViewMode("fit-screen");
+    }else{
+        if(zoomScale<=0.45){
+            setViewMode("fit-screen");
+        }else{
+            zoomScale=Math.max(0.25,Math.round((zoomScale-0.2)*100)/100);
+            applyZoom();
+        }
+    }
+}
+
+function zoomAtPoint(clientX,clientY,factor){
+    const rect=image.getBoundingClientRect();
+    const offsetX=clientX-rect.left;
+    const offsetY=clientY-rect.top;
+    const ratioX=rect.width>0?offsetX/rect.width:0.5;
+    const ratioY=rect.height>0?offsetY/rect.height:0.5;
+
+    if(viewMode!=="custom"){
+        const renderedRatio=image.clientWidth/(image.naturalWidth||image.clientWidth||1);
+        zoomScale=Math.max(0.25,Math.min(5.0,renderedRatio*factor));
+        viewMode="custom";
+    }else{
+        zoomScale=Math.max(0.25,Math.min(5.0,zoomScale*factor));
+    }
+
+    applyZoom();
+
+    requestAnimationFrame(()=>{
+        const newRect=image.getBoundingClientRect();
+        viewer.scrollLeft=(newRect.width*ratioX)-(clientX-viewer.getBoundingClientRect().left);
+        viewer.scrollTop=(newRect.height*ratioY)-(clientY-viewer.getBoundingClientRect().top);
+    });
+}
+
+function toggleMaintainZoom(){
+    maintainZoom=!maintainZoom;
+    updateZoomUI();
+    localStorage.setItem("chapterflow_maintain_zoom",maintainZoom.toString());
+}
+
+image.onload=()=>{
+    // Auto-detect long vertical strip on initial view if no saved preference
+    if(!localStorage.getItem("chapterflow_view_mode")){
+        if(image.naturalHeight/image.naturalWidth>1.8){
+            viewMode="fit-width";
+            applyZoom();
+        }
+    }
+
+    if(viewMode==="custom"){
+        applyZoom();
+    }
+
+    if(scrollTargetOnLoad==="bottom"){
+        viewer.scrollTop=viewer.scrollHeight;
+        scrollTargetOnLoad=null;
+    }else if(scrollTargetOnLoad==="top"){
+        viewer.scrollTop=0;
+        scrollTargetOnLoad=null;
+    }
+};
 
 
 /* =========================
@@ -604,6 +990,11 @@ function show(){
 
     updateSidebar();
     preloadNearby();
+
+    if(!maintainZoom){
+        viewMode="fit-screen";
+    }
+    applyZoom();
 }
 
 
@@ -645,7 +1036,10 @@ function next(){
     if(index<images.length-1){
 
         index++;
+        scrollTargetOnLoad="top";
         show();
+        viewer.scrollTop=0;
+        viewer.scrollLeft=0;
 
     }
 }
@@ -655,7 +1049,16 @@ function previous(){
     if(index>0){
 
         index--;
+        scrollTargetOnLoad=(viewMode==="fit-width"||viewMode==="custom")?"bottom":"top";
         show();
+        if(viewMode==="fit-width"||viewMode==="custom"){
+            requestAnimationFrame(()=>{
+                viewer.scrollTop=viewer.scrollHeight;
+            });
+        }else{
+            viewer.scrollTop=0;
+            viewer.scrollLeft=0;
+        }
 
     }
 }
@@ -787,46 +1190,100 @@ document.addEventListener("webkitfullscreenchange",onFullscreenChange);
 
 document.addEventListener("keydown",e=>{
 
-    if(
-        e.key==="ArrowRight" ||
-        e.key===" " ||
-        e.key==="PageDown"
-    ){
-
+    if(e.key==="+"||e.key==="="){
         e.preventDefault();
-        next();
-
+        zoomIn();
+        return;
     }
 
-    if(
-        e.key==="ArrowLeft" ||
-        e.key==="PageUp"
-    ){
+    if(e.key==="-"||e.key==="_"){
+        e.preventDefault();
+        zoomOut();
+        return;
+    }
 
+    if(e.key==="0"){
+        e.preventDefault();
+        setViewMode("fit-screen");
+        return;
+    }
+
+    if(e.key.toLowerCase()==="w"){
+        e.preventDefault();
+        cycleZoomMode();
+        return;
+    }
+
+    if(e.key.toLowerCase()==="l"){
+        e.preventDefault();
+        toggleMaintainZoom();
+        return;
+    }
+
+    if(e.key==="ArrowDown"){
+        if(viewer.scrollHeight>viewer.clientHeight){
+            viewer.scrollBy({top:120,behavior:"smooth"});
+            e.preventDefault();
+            return;
+        }
+    }
+
+    if(e.key==="ArrowUp"){
+        if(viewer.scrollHeight>viewer.clientHeight){
+            viewer.scrollBy({top:-120,behavior:"smooth"});
+            e.preventDefault();
+            return;
+        }
+    }
+
+    if(e.key==="PageDown"||e.key===" "){
+        e.preventDefault();
+        if(viewer.scrollHeight>viewer.clientHeight && viewer.scrollTop+viewer.clientHeight<viewer.scrollHeight-15){
+            viewer.scrollBy({top:viewer.clientHeight*0.85,behavior:"smooth"});
+        }else{
+            next();
+        }
+        return;
+    }
+
+    if(e.key==="PageUp"){
+        e.preventDefault();
+        if(viewer.scrollHeight>viewer.clientHeight && viewer.scrollTop>15){
+            viewer.scrollBy({top:-viewer.clientHeight*0.85,behavior:"smooth"});
+        }else{
+            previous();
+        }
+        return;
+    }
+
+    if(e.key==="ArrowRight"){
+        e.preventDefault();
+        next();
+        return;
+    }
+
+    if(e.key==="ArrowLeft"){
         e.preventDefault();
         previous();
-
+        return;
     }
 
     if(e.key==="Home"){
-
         index=0;
         show();
-
+        return;
     }
 
     if(e.key==="End"){
-
         index=images.length-1;
         show();
-
+        return;
     }
 
     if(e.key.toLowerCase()==="f"){
-
         e.preventDefault();
         toggleFullscreen();
-
+        return;
     }
 
 });
@@ -843,6 +1300,7 @@ document.addEventListener("keydown",e=>{
 
 let fsStartX=0;
 let fsStartY=0;
+let fsLastY=0;
 let fsTracking=false;
 let lastTouchTime=0;
 
@@ -860,6 +1318,7 @@ fullscreenGesture.addEventListener(
 
         fsStartX=t.clientX;
         fsStartY=t.clientY;
+        fsLastY=t.clientY;
         fsTracking=true;
 
     },
@@ -873,10 +1332,19 @@ fullscreenGesture.addEventListener(
 
         if(!isFullscreen()||!fsTracking)return;
 
-        /*
-           Prevent browser horizontal gesture handling.
-           Vertical page movement is irrelevant in fullscreen.
-        */
+        const t=e.changedTouches[0];
+        const dx=t.clientX-fsStartX;
+        const dy=t.clientY-fsStartY;
+
+        // Allow vertical drag scrolling on tall pages in fullscreen
+        if(Math.abs(dy)>Math.abs(dx) && viewer.scrollHeight>viewer.clientHeight){
+            viewer.scrollTop -= (t.clientY - fsLastY);
+            fsLastY = t.clientY;
+            e.preventDefault();
+            return;
+        }
+
+        fsLastY = t.clientY;
         e.preventDefault();
 
     },
@@ -900,6 +1368,11 @@ fullscreenGesture.addEventListener(
         const x=fsStartX;
 
         fsTracking=false;
+
+        // If user scrolled vertically in fullscreen, don't trigger horizontal navigation
+        if(Math.abs(dy)>=VERTICAL_LIMIT && viewer.scrollHeight>viewer.clientHeight){
+            return;
+        }
 
         const isMiddle=
             x>=width*.35 &&
@@ -989,16 +1462,80 @@ fullscreenGesture.addEventListener(
 
 
 /* ==================================================
-   CLICK / TAP NAVIGATION (PC Mouse & Touchscreens)
+   DRAG-TO-PAN, WHEEL ZOOM & CLICK NAVIGATION
    ================================================== */
 
+viewer.addEventListener("mousedown", e => {
+    if(e.button !== 0) return;
+    if(e.target.closest("#sidebar, #fullscreen-btn, #zoom-widget, #sidebar-close, #edge")) return;
+
+    isPanning = true;
+    dragDistance = 0;
+    panStartX = e.clientX;
+    panStartY = e.clientY;
+    panScrollLeft = viewer.scrollLeft;
+    panScrollTop = viewer.scrollTop;
+});
+
+window.addEventListener("mousemove", e => {
+    if(isFullscreen()){
+        revealFullscreenUI();
+    }
+
+    if(!isPanning) return;
+    const dx = e.clientX - panStartX;
+    const dy = e.clientY - panStartY;
+    dragDistance = Math.hypot(dx, dy);
+
+    if(dragDistance > 6){
+        viewer.classList.add("is-dragging");
+        viewer.scrollLeft = panScrollLeft - dx;
+        viewer.scrollTop = panScrollTop - dy;
+    }
+});
+
+window.addEventListener("mouseup", () => {
+    if(isPanning){
+        isPanning = false;
+        viewer.classList.remove("is-dragging");
+    }
+});
+
+viewer.addEventListener("wheel", e => {
+    if(e.ctrlKey || e.metaKey){
+        e.preventDefault();
+        const factor = e.deltaY < 0 ? 1.15 : 0.87;
+        zoomAtPoint(e.clientX, e.clientY, factor);
+    }
+}, {passive: false});
+
+image.addEventListener("dblclick", e => {
+    e.preventDefault();
+    e.stopPropagation();
+    if(viewMode === "fit-screen"){
+        setViewMode("fit-width");
+    } else {
+        setViewMode("fit-screen");
+    }
+});
+
+if(zoomOutBtn) zoomOutBtn.onclick = (e) => { e.stopPropagation(); zoomOut(); };
+if(zoomInBtn) zoomInBtn.onclick = (e) => { e.stopPropagation(); zoomIn(); };
+if(zoomLevelBtn) zoomLevelBtn.onclick = (e) => { e.stopPropagation(); cycleZoomMode(); };
+if(zoomLockBtn) zoomLockBtn.onclick = (e) => { e.stopPropagation(); toggleMaintainZoom(); };
+
 document.addEventListener("click", e => {
+
+    if(dragDistance > 6){
+        dragDistance = 0;
+        return;
+    }
 
     // Prevent double-triggering from touch events that already ran
     if(Date.now()-lastTouchTime<600)return;
 
-    // Ignore clicks on UI elements (sidebar, close button, fullscreen button, edge trigger)
-    if(e.target.closest("#sidebar, #fullscreen-btn, #sidebar-close, #edge"))return;
+    // Ignore clicks on UI elements (sidebar, close button, fullscreen button, zoom widget, edge trigger)
+    if(e.target.closest("#sidebar, #fullscreen-btn, #zoom-widget, #sidebar-close, #edge"))return;
 
     // If sidebar is open, click outside closes it
     if(sidebar.classList.contains("open")){
