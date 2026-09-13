@@ -85,14 +85,20 @@ python reader.py --bind 0.0.0.0
 
 ## ⌨️ Controls & Shortcuts
 
-| Action | Desktop (Mouse & Keyboard) | Touch / Mobile |
-| :--- | :--- | :--- |
-| **Next Page** | `→` / `Space` / `PageDown` or **Click Left 35%** | Tap left zone / Swipe right (Manga RTL) |
-| **Previous Page** | `←` / `PageUp` or **Click Right 35%** | Tap right zone / Swipe left |
-| **Jump to First Page** | `Home` | — |
-| **Jump to Last Page** | `End` | — |
-| **Toggle Fullscreen** | `F` or Fullscreen button | Fullscreen button |
-| **Toggle Sidebar / TOC** | Hover left edge or **Click Center 30%** | Tap screen center (middle 30%) |
+ChapterFlow includes a **Reading Direction toggle** in the sidebar (saved automatically in browser storage):
+- **Left to Right (Default)**: Optimized for study notes, textbooks, documents, and western reading.
+- **Right to Left**: Optimized for Manga and Japanese right-to-left reading.
+
+| Action | Desktop (Mouse & Keyboard) | Touch / Mobile (Left to Right) | Touch / Mobile (Right to Left) |
+| :--- | :--- | :--- | :--- |
+| **Next Page** | `→` / `Space` / `PageDown` or Click Next Zone* | Tap right zone / Swipe left | Tap left zone / Swipe right |
+| **Previous Page** | `←` / `PageUp` or Click Prev Zone* | Tap left zone / Swipe right | Tap right zone / Swipe left |
+| **Jump to First Page** | `Home` | — | — |
+| **Jump to Last Page** | `End` | — | — |
+| **Toggle Fullscreen** | `F` or Fullscreen button | Fullscreen button | Fullscreen button |
+| **Toggle Sidebar / TOC** | Hover left edge or **Click Center 30%** | Tap screen center (middle 30%) | Tap screen center (middle 30%) |
+
+*\*In Left to Right mode, clicking the right side advances and left side goes back. In Right to Left mode, clicking the left side advances.*
 
 ---
 

@@ -170,6 +170,56 @@ body.fullscreen #fullscreen-gesture{
     margin-left:4px;
 }
 
+#sidebar-direction{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    padding:9px 10px;
+    margin:6px 0 12px;
+    background:#1e1e1e;
+    border-radius:6px;
+    border:1px solid rgba(255,255,255,.08);
+}
+
+.dir-label{
+    font-size:11px;
+    color:#888;
+    font-weight:bold;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+}
+
+.dir-buttons{
+    display:flex;
+    gap:6px;
+}
+
+.dir-btn{
+    flex:1;
+    text-align:center;
+    padding:6px 4px;
+    font-size:11px;
+    font-weight:600;
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:4px;
+    background:#2a2a2a;
+    color:#aaa;
+    cursor:pointer;
+    transition:all .15s ease;
+    white-space:nowrap;
+}
+
+.dir-btn:hover{
+    color:#fff;
+    background:#383838;
+}
+
+.dir-btn.active{
+    background:#3b5ccc;
+    color:#fff;
+    border-color:#5c7cfa;
+}
+
 
 /* =========================
    Days
@@ -366,7 +416,15 @@ body.fullscreen-ui-hidden #sidebar{
 
     <div id="sidebar-header">
         <button id="sidebar-close" aria-label="Close sidebar">×</button>
-        <div id="sidebar-title">Reading Order</div>
+        <div id="sidebar-title">ChapterFlow</div>
+    </div>
+
+    <div id="sidebar-direction">
+        <span class="dir-label">Reading Direction</span>
+        <div class="dir-buttons">
+            <button id="dir-ltr" class="dir-btn" type="button" title="Standard: Left to Right (Notes, Books & Documents)">Left to Right</button>
+            <button id="dir-rtl" class="dir-btn" type="button" title="Manga & Comics: Right to Left">Right to Left</button>
+        </div>
     </div>
 
     <div id="tree"></div>
@@ -393,6 +451,21 @@ const swipeHint=document.getElementById("swipe-hint");
 const fullscreenBtn=document.getElementById("fullscreen-btn");
 const fullscreenGesture=document.getElementById("fullscreen-gesture");
 const sidebarClose=document.getElementById("sidebar-close");
+const dirLtrBtn=document.getElementById("dir-ltr");
+const dirRtlBtn=document.getElementById("dir-rtl");
+
+let readingDirection=localStorage.getItem("chapterflow_dir")||"ltr";
+
+function setReadingDirection(dir){
+    readingDirection=dir;
+    localStorage.setItem("chapterflow_dir",dir);
+    if(dirLtrBtn) dirLtrBtn.classList.toggle("active",dir==="ltr");
+    if(dirRtlBtn) dirRtlBtn.classList.toggle("active",dir==="rtl");
+}
+
+if(dirLtrBtn) dirLtrBtn.onclick=()=>setReadingDirection("ltr");
+if(dirRtlBtn) dirRtlBtn.onclick=()=>setReadingDirection("rtl");
+setReadingDirection(readingDirection);
 
 
 /* =========================
@@ -818,10 +891,12 @@ fullscreenGesture.addEventListener(
            ==========================
            OUTER 70% (LEFT 35% + RIGHT 35%)
            ==========================
-           - Swipe RIGHT  → next
-           - Swipe LEFT   → previous
-           - Tap left 35% → next
-           - Tap right 35% → previous
+           LTR (Notes/Books):
+             - Swipe LEFT  → next, Swipe RIGHT → previous
+             - Tap Right   → next, Tap Left    → previous
+           RTL (Manga):
+             - Swipe RIGHT → next, Swipe LEFT  → previous
+             - Tap Left    → next, Tap Right   → previous
         */
 
         const isLeftZone = x < width * 0.35;
@@ -834,8 +909,8 @@ fullscreenGesture.addEventListener(
             Math.abs(dy)<=Math.abs(dx)
         ){
 
-            // Swipe RIGHT → next, Swipe LEFT → previous
-            if(dx>0)
+            const isSwipeNext = (readingDirection === "ltr") ? (dx < 0) : (dx > 0);
+            if(isSwipeNext)
                 next();
             else
                 previous();
@@ -849,11 +924,10 @@ fullscreenGesture.addEventListener(
             Math.abs(dy)<VERTICAL_LIMIT
         ){
 
-            if(isLeftZone){
-                // Tap on left 35% → next
+            const isNextTap = (readingDirection === "ltr") ? isRightZone : isLeftZone;
+            if(isNextTap){
                 next();
-            }else if(isRightZone){
-                // Tap on right 35% → previous
+            }else{
                 previous();
             }
 
@@ -895,9 +969,12 @@ document.addEventListener("click", e => {
     const width=window.innerWidth;
     const x=e.clientX;
 
-    if(x<width*0.35){
+    const isNext = (readingDirection === "ltr") ? (x > width * 0.65) : (x < width * 0.35);
+    const isPrev = (readingDirection === "ltr") ? (x < width * 0.35) : (x > width * 0.65);
+
+    if(isNext){
         next();
-    }else if(x>width*0.65){
+    }else if(isPrev){
         previous();
     }else{
         if(isFullscreen()){
@@ -1108,6 +1185,10 @@ sidebar.addEventListener(
 function showSwipeHint(){
 
     if(window.innerWidth<=600){
+
+        swipeHint.textContent = (readingDirection === "ltr")
+            ? "← Swipe left for next page"
+            : "Swipe right for next page →";
 
         swipeHint.classList.add("show");
 
